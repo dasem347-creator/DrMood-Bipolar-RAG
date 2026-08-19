@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Mood — Bipolar Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <img src="assets/logo.jpg" alt="Dr. Mood logo">
+        </div>
+        <div>
+          <h1>DrMood</h1>
+          <span>AI MENTAL HEALTH ASSISTANT</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="chat">
+          <i class="fa-regular fa-message"></i>
+          <span>Chat</span>
+        </button>
+
+        <button class="nav-item history-toggle" id="historyToggle">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>History</span>
+          <i class="fa-solid fa-chevron-down history-chevron"></i>
+        </button>
+
+        <div class="history-submenu" id="historySubmenu">
+          <button class="old-chat">
+            <i class="fa-regular fa-message"></i>
+            <span>Manic episode symptoms</span>
+          </button>
+          <button class="old-chat">
+            <i class="fa-regular fa-message"></i>
+            <span>Mania vs hypomania</span>
+          </button>
+          <button class="old-chat">
+            <i class="fa-regular fa-message"></i>
+            <span>Bipolar treatment</span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- CHAT -->
+      <section id="chatView" class="view active-view">
+        <header class="chat-header">
+          <div class="assistant-info">
+            <div class="assistant-avatar">
+              <img src="assets/logo.jpg" alt="Dr. Mood">
+            </div>
+            <div>
+              <h2>DrMood</h2>
+              <p><span class="online-dot"></span> Evidence-based bipolar support</p>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <div class="role-switcher">
+              <button class="role-btn active" data-role="patient">
+                <i class="fa-solid fa-user"></i>
+                Patient
+              </button>
+              <button class="role-btn" data-role="doctor">
+                <i class="fa-solid fa-user-doctor"></i>
+                Doctor
+              </button>
+            </div>
+
+            <button class="icon-btn" id="evidenceToggle" title="Show evidence">
+              <i class="fa-solid fa-file-medical"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="chat-layout">
+
+          <div class="chat-panel">
+            <div class="chat-messages" id="chatMessages">
+
+              <div class="message assistant-message">
+                <div class="message-avatar">
+                  <img src="assets/logo.jpg" alt="Dr. Mood">
+                </div>
+                <div class="message-content">
+                  <span class="message-name">DrMood</span>
+                  <div class="bubble">
+                    Hello! I can help you understand bipolar disorder using information
+                    from the approved clinical resources.
+                    <div class="quick-actions">
+                      <button class="quick-question">What is bipolar disorder?</button>
+                      <button class="quick-question">What are manic symptoms?</button>
+                      <button class="quick-question">What is hypomania?</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="message user-message">
+                <div class="message-content">
+                  <span class="message-name">You</span>
+                  <div class="bubble">
+                    What are common symptoms of a manic episode?
+                  </div>
+                </div>
+              </div>
+
+              <div class="message assistant-message">
+                <div class="message-avatar">
+                  <img src="assets/logo.jpg" alt="Dr. Mood">
+                </div>
+                <div class="message-content">
+                  <span class="message-name">Dr. Mood</span>
+                  <div class="bubble">
+                    A manic episode involves a distinct period of unusually elevated,
+                    expansive, or irritable mood together with increased activity or
+                    energy and other associated symptoms.
+
+                    <div class="answer-source">
+                      <i class="fa-solid fa-book-medical"></i>
+                      Based on approved clinical resources
+                      <button id="openEvidenceInline">View evidence</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="chat-input-area">
+              <div class="input-wrapper">
+                <textarea id="questionInput" rows="1"
+                  placeholder="Ask a question about bipolar disorder..."></textarea>
+                <button id="askBtn" class="send-btn" title="Send">
+                  <i class="fa-solid fa-arrow-up"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden evidence drawer -->
+          <aside class="evidence-drawer" id="evidenceDrawer">
+            <div class="drawer-header">
+              <div>
+                <span class="eyebrow">EVIDENCE</span>
+                <h3>Supporting sources</h3>
+              </div>
+              <button class="close-drawer" id="closeEvidence" title="Close evidence">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <div class="drawer-body">
+              <div class="evidence-card selected">
+                <div class="evidence-top">
+                  <span class="score">0.92</span>
+                  <span class="used"><i class="fa-solid fa-check"></i> Used</span>
+                </div>
+                <h4>Bipolar Disorder Clinical Guideline</h4>
+                <span class="evidence-meta">Mania • p. 12</span>
+                <p>Describes the clinical features associated with a manic episode.</p>
+              </div>
+
+              <div class="evidence-card">
+                <div class="evidence-top">
+                  <span class="score">0.81</span>
+                  <span class="supporting">Supporting</span>
+                </div>
+                <h4>Approved Mental Health Reference</h4>
+                <span class="evidence-meta">Bipolar I • p. 8</span>
+                <p>Provides context about mood, energy, activity, and functioning.</p>
+              </div>
+
+              <div class="source-preview">
+                <div class="preview-title">
+                  <span>Source preview</span>
+                  <span>p. 12</span>
+                </div>
+                <div class="document">
+                  <strong>BIPOLAR DISORDER<br>CLINICAL GUIDELINE</strong>
+                  <div class="doc-line long"></div>
+                  <div class="doc-line"></div>
+                  <h5>Manic Episode</h5>
+                  <p class="highlight">
+                    A manic episode is a distinct period of abnormally elevated,
+                    expansive, or irritable mood and increased activity or energy.
+                  </p>
+                  <div class="doc-line long"></div>
+                  <div class="doc-line medium"></div>
+                  <div class="doc-line"></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
