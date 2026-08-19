@@ -913,3 +913,12 @@ textarea {
     max-width: calc(100% - 68px);
   }
 }
+.citation-link {
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0 1px;
+}
+.citation-link:hover {
+  text-decoration: underline;
+}

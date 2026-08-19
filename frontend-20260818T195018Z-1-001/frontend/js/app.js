@@ -49,27 +49,35 @@ closeEvidence.addEventListener("click", hideEvidence);
 openEvidenceInline.addEventListener("click", openEvidence);
 
 // بيرسم الـ evidence الحقيقية الراجعة من الـ API جوه الـ drawer
-function renderEvidence(evidenceList) {
+// highlightRank (اختياري): رقم المصدر اللي المفروض يتظلل ويتعمله scroll ليه (لما المستخدم يدوس على citation)
+function renderEvidence(evidenceList, highlightRank = null) {
   if (!evidenceList || evidenceList.length === 0) {
     drawerBody.innerHTML = `<p style="padding:16px;">No supporting evidence for this answer.</p>`;
     return;
   }
 
-  const cardsHtml = evidenceList.map((e, i) => `
-    <div class="evidence-card ${i === 0 ? "selected" : ""}">
+  const cardsHtml = evidenceList.map((e, i) => {
+    const rank = e.rank || i + 1;
+    const isSelected = highlightRank ? rank === highlightRank : i === 0;
+    return `
+    <div class="evidence-card ${isSelected ? "selected" : ""}" id="evidence-card-${rank}">
       <div class="evidence-top">
         <span class="score">${e.score.toFixed(2)}</span>
         <span class="${e.used ? "used" : "supporting"}">
           ${e.used ? '<i class="fa-solid fa-check"></i> Used' : "Supporting"}
         </span>
       </div>
-      <h4>${e.source_title}</h4>
+      <h4>[${rank}] ${e.source_title}</h4>
       <span class="evidence-meta">${e.source_meta}</span>
       <p>${e.snippet}</p>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
-  const top = evidenceList[0];
+  const top = highlightRank
+    ? (evidenceList.find(e => (e.rank || evidenceList.indexOf(e) + 1) === highlightRank) || evidenceList[0])
+    : evidenceList[0];
+
   const previewHtml = `
     <div class="source-preview">
       <div class="preview-title">
@@ -84,6 +92,23 @@ function renderEvidence(evidenceList) {
   `;
 
   drawerBody.innerHTML = cardsHtml + previewHtml;
+
+  if (highlightRank) {
+    const el = document.getElementById(`evidence-card-${highlightRank}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+// بتحول أي [1] أو [2] جوه نص الرد لرابط قابل للضغط، بس لو فعلاً فيه evidence بنفس الرقم ده
+function linkifyCitations(text, evidence) {
+  if (!evidence || evidence.length === 0) return text;
+  return text.replace(/\[(\d+)\]/g, (match, num) => {
+    const rank = parseInt(num, 10);
+    const exists = evidence.some((e, i) => (e.rank || i + 1) === rank);
+    return exists
+      ? `<sup class="citation-link" data-rank="${rank}">[${rank}]</sup>`
+      : match;
+  });
 }
 
 // ---------- Chat ----------
@@ -96,6 +121,8 @@ function addMessage(text, type, evidence = []) {
   wrapper.className = `message ${type}-message`;
 
   if (type === "assistant") {
+    const linkedText = linkifyCitations(text, evidence);
+
     wrapper.innerHTML = `
       <div class="message-avatar">
         <img src="assets/logo.jpg" alt="Dr. Mood">
@@ -103,7 +130,7 @@ function addMessage(text, type, evidence = []) {
       <div class="message-content">
         <span class="message-name">Clinical Assist</span>
         <div class="bubble">
-          ${text}
+          ${linkedText}
           <div class="answer-source">
             <i class="fa-solid fa-book-medical"></i>
             Based on approved clinical resources
@@ -116,6 +143,15 @@ function addMessage(text, type, evidence = []) {
     wrapper.querySelector(".dynamic-evidence").addEventListener("click", () => {
       renderEvidence(evidence);
       openEvidence();
+    });
+
+    // كل رقم citation جوه الرد بقى قابل للضغط، وبيفتح المصدر المطابق بالظبط في اللوحة
+    wrapper.querySelectorAll(".citation-link").forEach(el => {
+      el.addEventListener("click", () => {
+        const rank = parseInt(el.dataset.rank, 10);
+        renderEvidence(evidence, rank);
+        openEvidence();
+      });
     });
   } else {
     wrapper.innerHTML = `

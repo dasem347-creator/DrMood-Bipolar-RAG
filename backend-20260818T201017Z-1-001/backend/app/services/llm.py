@@ -22,6 +22,11 @@ for care from a licensed clinician, when the topic involves symptoms, treatment,
 self-harm, intent to harm others, or a severe manic/psychotic episode with safety risk), \
 do not continue with general education. Respond with care, encourage them to contact \
 emergency services or a crisis line right now, and keep the tone calm and supportive.
+- CITATIONS: Each source in CONTEXT is numbered, e.g. "[Source 2: ...]". Whenever you state a \
+fact drawn from a source, add a bracket citation with that number right after the sentence, \
+like this: "...increased energy or activity [2]." Use multiple brackets like [1][3] if a \
+sentence draws on more than one source. Only cite sources you actually used — do not cite a \
+source you didn't rely on. Do not explain the citation system to the user, just use it.
 """
 
 DOCTOR_SYSTEM_PROMPT = """You are Dr. Mood, an AI assistant that surfaces clinically precise \
@@ -36,6 +41,11 @@ say so explicitly rather than filling gaps from general knowledge.
 or a treatment plan for a named patient, and do not recommend specific doses. You can describe \
 what the source material says about diagnostic criteria or treatment classes in general terms.
 - Be concise and structured (short paragraphs or bullet points are fine).
+- CITATIONS: Each source in CONTEXT is numbered, e.g. "[Source 2: ...]". Whenever you state a \
+fact drawn from a source, add a bracket citation with that number right after the sentence, \
+like this: "...increased energy or activity [2]." Use multiple brackets like [1][3] if a \
+sentence draws on more than one source. Only cite sources you actually used — do not cite a \
+source you didn't rely on. Do not explain the citation system to the user, just use it.
 """
 
 
@@ -43,8 +53,9 @@ def build_context_block(chunks: list[dict]) -> str:
     if not chunks:
         return "No relevant approved source material was found for this question."
     parts = []
-    for i, c in enumerate(chunks, start=1):
-        parts.append(f"[Source {i}: {c['title']} ({c['category']}, p. {c['page']})]\n{c['text']}")
+    for c in chunks:
+        idx = c.get("index", "?")
+        parts.append(f"[Source {idx}: {c['title']} ({c['category']}, p. {c['page']})]\n{c['text']}")
     return "\n\n".join(parts)
 
 

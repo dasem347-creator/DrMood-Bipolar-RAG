@@ -27,21 +27,22 @@ def _summarize(text: str, max_chars: int = 160) -> str:
 
 def answer_question(role: str, question: str, history: list[dict]) -> tuple[str, list[dict]]:
     """
-    Full RAG turn: retrieve relevant approved chunks, generate a grounded answer,
-    return (answer_text, evidence_list). `history` is prior turns as
-    [{"role": "user"|"assistant", "content": "..."}], used for conversational context.
+    Full RAG turn: retrieve ALL top_k approved chunks, generate a grounded answer
+    that cites them by number, return (answer_text, evidence_list). `history` is
+    prior turns as [{"role": "user"|"assistant", "content": "..."}].
     """
     evidence = retrieve_evidence(question)
-    used_chunks = [e for e in evidence if e["used"]] or evidence[:1]
 
+    # نبعت كل الـ top_k للـ LLM، مش بس اللي فوق العتبة، عشان يقدر يستشهد بأي مصدر منهم
     context_chunks = [
         {
+            "index": e["rank"],
             "title": e["source_title"],
             "category": e["source_meta"].split("•")[0].strip(),
             "page": e["source_meta"].split("p.")[-1].strip(),
             "text": e["full_text"],
         }
-        for e in used_chunks
+        for e in evidence
     ]
 
     answer = llm.generate_answer(role=role, question=question, context_chunks=context_chunks, history=history)
